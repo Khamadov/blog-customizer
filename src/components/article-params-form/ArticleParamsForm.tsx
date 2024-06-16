@@ -1,9 +1,11 @@
+import { useState, useRef } from 'react';
 import { ArrowButton } from 'components/arrow-button';
 import { Button } from 'components/button';
 import { Text } from '../text';
 import { RadioGroup } from '../radio-group';
 import { Select } from '../select';
 import { Separator } from '../separator';
+import { useOutsideClickClose } from '../select/hooks/useOutsideClickClose';
 import {
 	OptionType,
 	fontFamilyOptions,
@@ -15,7 +17,7 @@ import {
 	ArticleStateType,
 } from 'src/constants/articleProps';
 import clsx from 'clsx';
-import { useState } from 'react';
+
 import styles from './ArticleParamsForm.module.scss';
 
 type ArticleParamsFormProps = {
@@ -28,6 +30,13 @@ export const ArticleParamsForm = ({
 }: ArticleParamsFormProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [formState, setFormState] = useState<ArticleStateType>(currentSettings);
+	const rootRef = useRef<HTMLDivElement>(null);
+
+	useOutsideClickClose({
+		isOpen: isOpen,
+		rootRef,
+		onChange: setIsOpen,
+	});
 
 	const handleOptionChange =
 		(optionType: keyof ArticleStateType) => (selected: OptionType) => {
@@ -52,6 +61,7 @@ export const ArticleParamsForm = ({
 	};
 	return (
 		<>
+		<div ref = {rootRef}>
 			<ArrowButton onClick={toggleForm} isOpen={isOpen} />
 			<aside
 				className={clsx(styles.container, isOpen && styles.container_open)}>
@@ -97,6 +107,7 @@ export const ArticleParamsForm = ({
 					</div>
 				</form>
 			</aside>
+			</div>
 		</>
 	);
 };
